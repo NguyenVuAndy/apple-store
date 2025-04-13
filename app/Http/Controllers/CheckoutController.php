@@ -4,19 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\sanpham;
+use Stripe;
 use Cart;
-use Stripe\Stripe;
 
-
-class GioHangController extends Controller
+class CheckoutController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $coTheBanSeThich = Sanpham::coTheBanSeThich()->get();
-        return view('giohang')->with('coTheBanSeThich', $coTheBanSeThich);
+        return view('checkout');
     }
 
     /**
@@ -32,19 +30,26 @@ class GioHangController extends Controller
      */
     public function store(Request $request)
     {
-        $duplicates = Cart::search(function($cartItem, $rowId) use ($request)
+        try
         {
-            return $cartItem->id === $request->masp;
-        });
+            $charge = Stripe::charges()->create([
+                'amount' =>(int) str_replace('.', '', Cart::total()),
+                'currency' => 'vnd',
+                'source' => $request->stripeToken,
+                'description' => 'Order',
+                'receipt_email' => $request->email,
+                'metadata' => [
+                    // 'contents' => $contents,
+                    // 'quantity' => Cart::instance('default')->count(),
+                ],
+            ]);
 
-        if ($duplicates->isNotEmpty())
-        {
-            return redirect()->route('giohang.index')->with('success_message', 'Mon do da co trong gio hang');
+            return back()->with('success_message', 'Thanh toan thanh cong!');
         }
+        catch(Exception $e)
+        {
 
-        Cart::add($request->masp, $request->tensp, 1, $request->giasp)
-                ->associate(sanpham::class);
-        return redirect()->route('giohang.index')->with('success_message', 'Da them mon do vao gio hang');
+        }
     }
 
     /**
@@ -76,8 +81,6 @@ class GioHangController extends Controller
      */
     public function destroy(string $id)
     {
-        Cart::remove($id);
-
-        return back()->with('success_message', 'Xoa thanh cong');
+        //
     }
 }

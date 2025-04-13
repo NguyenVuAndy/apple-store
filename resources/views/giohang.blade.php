@@ -102,8 +102,8 @@
             </div> <!-- end cart-totals -->
 
             <div class="cart-buttons">
-                <a href="#" class="button">Tiep tuc mua sam</a>
-                <a href="/checkout" class="button-primary">Tien hanh thanh toan</a>
+                <a href="{{ route('cuahang.index') }}" class="button">Tiep tuc mua sam</a>
+                <a href="{{ route('checkout.index') }}" class="button-primary">Tien hanh thanh toan</a>
             </div>
 
             @else

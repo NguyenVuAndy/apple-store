@@ -5,8 +5,7 @@ use App\Http\Controllers\MoMoPaymentController;
 use App\Http\Controllers\TrangChuController;
 use App\Http\Controllers\CuaHangController;
 use App\Http\Controllers\GioHangController;
-
-// Route::view('/', 'trangchu');
+use App\Http\Controllers\CheckoutController;
 
 Route::get('/', [TrangChuController::class, 'index'])->name('trangchu');
 Route::get('/cuahang', [CuaHangController::class, 'index'])->name('cuahang.index');
@@ -18,8 +17,10 @@ Route::get('empty', function() {
     Cart::destroy();
 });
 
-Route::view('/sanpham', 'sanpham');
-Route::view('/checkout', 'checkout');
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
 Route::view('/thankyou', 'thankyou');
+
 
 Route::post('/momo_payment', [MoMoPaymentController::class, 'momo_payment']);
